@@ -54,6 +54,10 @@ Content/Geometry/*
 Content/Mannequin/Character/*
 Content/ThirdPerson/*
 
+Content/Mesh/*
+Content/Materials/*
+Content/Textures/*
+
 # Builds
 Build/*
 
