@@ -49,14 +49,16 @@ SourceArt/**/*.tga
 Binaries/*
 Plugins/*/Binaries/*
 
-#Ignore Mesh, Materials and Textures, Temp
+#Ignore Mesh, Materials and Textures, Temp, Assets
 Content/Geometry/*
 Content/Mannequin/Character/*
 Content/ThirdPerson/*
+Content/Assets/*
 
 Content/Mesh/*
 Content/Materials/*
 Content/Textures/*
+
 
 # Builds
 Build/*
