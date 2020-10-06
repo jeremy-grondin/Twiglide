@@ -2,6 +2,9 @@
 
 
 #include "AttackComponent.h"
+#include "Components/BoxComponent.h"
+#include "Collision.h"
+#include "Enemy.h"
 
 // Sets default values for this component's properties
 UAttackComponent::UAttackComponent()
@@ -10,7 +13,11 @@ UAttackComponent::UAttackComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	PrimaryComponentTick.bCanEverTick = true;
+
+	box = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
+	box->SetupAttachment(this);
+	box->OnComponentBeginOverlap.AddDynamic(this, &UAttackComponent::OnOverlap);
 }
 
 
@@ -23,7 +30,6 @@ void UAttackComponent::BeginPlay()
 	
 }
 
-
 // Called every frame
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -32,3 +38,13 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
+
+void UAttackComponent::OnOverlap(UPrimitiveComponent* OverlappedComponent,
+								AActor* OtherActor,
+								UPrimitiveComponent* OtherComp,
+								int32 OtherBodyIndex,
+								bool bFromSweep,
+								const FHitResult& SweepResult)
+{
+
+}
