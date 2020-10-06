@@ -14,7 +14,13 @@ EBTNodeResult::Type UMyBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& 
 	FVector playerPos = OwnerComp.GetBlackboardComponent()->GetValueAsVector(BlackboardKey.SelectedKeyName);
 	APawn* enemy = OwnerComp.GetAIOwner()->GetPawn();
 
-	enemy->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(enemy->GetActorLocation(), playerPos));
+	FVector enemyPos = OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation();
+	playerPos.Z = enemyPos.Z = 0;
+
+	FRotator rotation = UKismetMathLibrary::FindLookAtRotation(enemyPos, playerPos);
+	
+
+	enemy->SetActorRotation(rotation);
 
 	return EBTNodeResult::Succeeded;
 }
