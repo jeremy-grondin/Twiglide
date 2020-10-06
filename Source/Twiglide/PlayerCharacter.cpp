@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -28,6 +29,12 @@ APlayerCharacter::APlayerCharacter()
 	// set the pitch min and max
 	pitchMin = -50.0f;
 	pitchMax = 10.0f;
+
+	// set the dash Mechanic values
+	canDash = true;
+	dashDistance = 6000.0f;
+	dashCooldown = 1.0f;
+	dashStop = 0.1f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -51,8 +58,6 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 	
 }
 
@@ -65,6 +70,35 @@ void APlayerCharacter::BeginPlay()
 	cam_manager->ViewPitchMin = pitchMin;
 	cam_manager->ViewPitchMax = pitchMax;
 	
+}
+
+/** Called function for dash*/
+void APlayerCharacter::Dash()
+{
+	if (canDash)
+	{
+		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		LaunchCharacter(FVector(this->GetActorForwardVector().X
+								, this->GetActorForwardVector().Y
+								,0).GetSafeNormal() * dashDistance
+								, true
+								, true);
+		canDash = false;
+		GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
+	}
+}
+
+void APlayerCharacter::StopDashing()
+{
+	GetCharacterMovement()->StopMovementImmediately();
+	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
+	GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+
+}
+
+void APlayerCharacter::ResetDash()
+{
+	canDash = true;
 }
 
 // Called every frame
@@ -81,6 +115,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	// set up dash key bindings
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerCharacter::Dash);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);

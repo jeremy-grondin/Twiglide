@@ -19,6 +19,11 @@ class TWIGLIDE_API APlayerCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	bool canDash;
+
+	UPROPERTY()
+	FTimerHandle unusedHandle;
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
@@ -31,17 +36,42 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
-	/** Camera view pitch min*/
+	/** Camera view pitch min. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float pitchMin;
 
-	/** Camera view pitch max*/
+	/** Camera view pitch max. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float pitchMax;
+
+	/** Distance the dash is traveling. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
+	float dashDistance;
+
+	/** Time you qre effectively dashing*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
+	float dashStop;
+
+	/** Cooldown between dashes. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
+	float dashCooldown;
+
+	
+
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	/** Called for the Dash input */
+	void Dash();
+
+	/** Called for stoping the dash */
+	void StopDashing();
+
+	/** Set canDash to true onceAgain. */
+	void ResetDash();
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
