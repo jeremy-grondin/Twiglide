@@ -72,6 +72,7 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
+/** Called function for dash*/
 void APlayerCharacter::Dash()
 {
 	if (canDash)
