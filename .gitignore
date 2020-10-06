@@ -57,6 +57,7 @@ Content/ThirdPerson/*
 Content/Mesh/*
 Content/Materials/*
 Content/Textures/*
+Content/Assets/*
 
 # Builds
 Build/*
