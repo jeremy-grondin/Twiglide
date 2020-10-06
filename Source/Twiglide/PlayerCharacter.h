@@ -48,6 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashDistance;
 
+	/** Time you qre effectively dashing*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashStop;
 
