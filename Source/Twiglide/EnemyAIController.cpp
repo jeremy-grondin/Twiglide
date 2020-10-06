@@ -20,6 +20,8 @@ void AEnemyAIController::BeginPlay()
 
 void AEnemyAIController::Tick(float DeltaTime)
 {
-	if(player != nullptr)
-		Blackboard->SetValueAsVector("PlayerPos", player->GetActorLocation());
+	FVector awayPos = (2 * enemy->GetActorLocation()) - player->GetActorLocation();
+
+	Blackboard->SetValueAsVector("AwayPos", awayPos);
+	Blackboard->SetValueAsVector("PlayerPos", player->GetActorLocation());
 }

@@ -16,6 +16,12 @@ public:
 	// Sets default values for this actor's properties
 	AEnemy();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float minDistanceToPlayer = 300.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float maxDistanceToPlayer = 300.f;
+
 private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
