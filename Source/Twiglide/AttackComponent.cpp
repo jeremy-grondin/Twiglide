@@ -14,30 +14,25 @@ UAttackComponent::UAttackComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	PrimaryComponentTick.bCanEverTick = true;
-
-	box = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
+	
+	box = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollider"));
 	box->SetupAttachment(this);
-	box->OnComponentBeginOverlap.AddDynamic(this, &UAttackComponent::OnOverlap);
-}
 
+}
 
 // Called when the game starts
 void UAttackComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
+	if(box)
+		box->OnComponentBeginOverlap.AddDynamic(this, &UAttackComponent::OnOverlap);
 }
 
 // Called every frame
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
-
 
 void UAttackComponent::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 								AActor* OtherActor,
@@ -46,5 +41,13 @@ void UAttackComponent::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 								bool bFromSweep,
 								const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "HIT");
+	if (OtherActor->Tags.Max() != 0
+		&& OtherActor->Tags[0] == "Enemy")
+	{
+		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
+		if (!enemy->isDead)
+			enemy->TakeDamage(damage);
+	}
 }
