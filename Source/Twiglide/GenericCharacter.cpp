@@ -37,7 +37,6 @@ void AGenericCharacter::Tick(float DeltaTime)
 void AGenericCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AGenericCharacter::TakeDamage(int damageTaken)
@@ -61,7 +60,6 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (OtherActor->Tags.Max() != 0
 		&& OtherActor->Tags[0] == "Enemy")
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "HIT Enemy");
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
 		if (!enemy->isDead)

@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	TEnumAsByte<EAttackType> attackType;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isAttacking = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

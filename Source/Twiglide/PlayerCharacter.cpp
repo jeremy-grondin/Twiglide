@@ -180,7 +180,11 @@ void APlayerCharacter::MoveRight(float Value)
 
 void APlayerCharacter::Attack()
 {
-	attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	if (!isAttacking)
+	{
+		isAttacking = true;
+		attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
 }
 
 void APlayerCharacter::StopAttack()
