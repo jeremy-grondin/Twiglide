@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericCharacter.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
-class TWIGLIDE_API APlayerCharacter : public ACharacter
+class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 {
 	GENERATED_BODY()
 
@@ -56,9 +57,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashCooldown;
 
-	
-
-
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,6 +76,10 @@ protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
+
+	void Attack();
+
+	void StopAttack();
 
 	/**
 	 * Called via input to turn at a given rate.

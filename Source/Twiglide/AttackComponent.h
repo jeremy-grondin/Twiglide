@@ -6,12 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "AttackComponent.generated.h"
 
-enum EAttackType
-{
-	Light,
-	Heavy
-};
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TWIGLIDE_API UAttackComponent : public USceneComponent
@@ -19,13 +13,14 @@ class TWIGLIDE_API UAttackComponent : public USceneComponent
 	GENERATED_BODY()
 
 private:
-	EAttackType attackType;
 
-	class UBoxComponent* box;
 
 public:	
 	// Sets default values for this component's properties
 	UAttackComponent();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collider)
+	class UBoxComponent* box;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackStats)
 	int damage = 1;
