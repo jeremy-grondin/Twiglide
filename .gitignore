@@ -60,9 +60,11 @@ Content/Materials/*
 Content/Textures/*
 Content/Assets/*
 Content/ModularRPGHeroes/*
-Content/ModularRPGHeroesPolvart/*
+Content/ModularRPGHeroesPolyart/*
 Content/Platformer/*
 Content/RoboBars/*
+Content/Maps/ProjectsMaps/*
+Content/Blueprints/ProjectBP/*
 
 
 
