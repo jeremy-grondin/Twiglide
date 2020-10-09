@@ -57,6 +57,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashCooldown;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool targetLocked;
+
 
 protected:
 	// Called when the game starts or when spawned
