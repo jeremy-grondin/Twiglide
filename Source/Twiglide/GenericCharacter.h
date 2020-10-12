@@ -20,13 +20,15 @@ class TWIGLIDE_API AGenericCharacter : public ACharacter
 	GENERATED_BODY()
 
 private:
-	int life;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = Attacks, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* attackBox;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	int life;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	int damage = 1;
 
