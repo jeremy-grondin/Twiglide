@@ -22,6 +22,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float maxDistanceToPlayer = 300.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float attackDistance = 200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float attackCooldown = 2.0f;
+
+	float attackTimer = 0.0f;
+
+	bool canAttack = false;
+
 private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

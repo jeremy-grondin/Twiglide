@@ -74,7 +74,7 @@ void APlayerCharacter::BeginPlay()
 /** Called function for dash*/
 void APlayerCharacter::Dash()
 {
-	if (canDash)
+	if (canDash && !isDead)
 	{
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 		LaunchCharacter(FVector(this->GetActorForwardVector().X
@@ -138,19 +138,25 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::TurnAtRate(float Rate)
 {
+	if (isDead)
+		return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::LookUpAtRate(float Rate)
 {
+	if (isDead)
+		return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL) && (Value != 0.0f) && !isDead)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -164,7 +170,7 @@ void APlayerCharacter::MoveForward(float Value)
 
 void APlayerCharacter::MoveRight(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL) && (Value != 0.0f) && !isDead)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -175,18 +181,4 @@ void APlayerCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
-}
-
-void APlayerCharacter::Attack()
-{
-	if (!isAttacking)
-	{
-		isAttacking = true;
-		attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	}
-}
-
-void APlayerCharacter::StopAttack()
-{
-	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

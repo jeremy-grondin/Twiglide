@@ -46,7 +46,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Sets default values for this character's properties
 	AGenericCharacter();
 	
@@ -57,6 +57,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void TakeDamage(int damage);
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable, Category = "Class Functions")
+	void StopAttack();
 
 	UFUNCTION()
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent,

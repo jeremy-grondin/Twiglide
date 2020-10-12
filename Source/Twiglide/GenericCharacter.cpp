@@ -73,3 +73,14 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 			player->TakeDamage(damage);
 	}
 }
+
+void AGenericCharacter::Attack()
+{
+	if (isAttacking)
+		attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AGenericCharacter::StopAttack()
+{
+	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
