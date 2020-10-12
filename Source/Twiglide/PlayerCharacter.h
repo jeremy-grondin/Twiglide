@@ -60,6 +60,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool targetLocked;
 
+	UFUNCTION(BlueprintCallable)
+	void DisableMouseInput();
 
 protected:
 	// Called when the game starts or when spawned
