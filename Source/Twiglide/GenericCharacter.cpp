@@ -58,7 +58,7 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 				const FHitResult& SweepResult)
 {
 	if (OtherActor->Tags.Max() != 0
-		&& OtherActor->Tags[0] == "Enemy")
+		&& OtherActor->Tags[0] == "Enemy" && !ActorHasTag("Enemy"))
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
@@ -66,7 +66,7 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 			enemy->TakeDamage(damage);
 	}
 	else if (OtherActor->Tags.Max() != 0
-		&& OtherActor->Tags[0] == "Player")
+		&& OtherActor->Tags[0] == "Player" && !ActorHasTag("Player"))
 	{
 		APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);
 		if(!player->isDead)
@@ -76,8 +76,10 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 
 void AGenericCharacter::Attack()
 {
-	if (isAttacking)
-		attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	if(!isAttacking)
+		isAttacking = true;
+
+	attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AGenericCharacter::StopAttack()

@@ -104,7 +104,16 @@ void APlayerCharacter::ResetDash()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	if (isHit)
+	{
+		hitCooldown += DeltaTime;
+		if (hitCooldown >= hitDelay)
+		{
+			hitCooldown = 0.f;
+			isHit = false;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -180,5 +189,15 @@ void APlayerCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void APlayerCharacter::TakeDamage(int damageTaken)
+{
+	if (!isHit)
+	{
+		Super::TakeDamage(damageTaken);
+
+		isHit = true;
 	}
 }

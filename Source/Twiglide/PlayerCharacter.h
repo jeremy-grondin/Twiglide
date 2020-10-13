@@ -56,7 +56,13 @@ public:
 	/** Cooldown between dashes. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashCooldown;
+	 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float hitDelay = 1.0f;
 
+	float hitCooldown = 0.0f;
+
+	bool isHit = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -96,6 +102,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void TakeDamage(int damage) override;
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
