@@ -66,6 +66,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisableMouseInput();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* targetedEnemy;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
