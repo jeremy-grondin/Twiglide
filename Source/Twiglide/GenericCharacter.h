@@ -29,8 +29,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	int life;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	int damage = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int lightDamage = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int heavyDamage = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	int maxLife = 5;
@@ -43,6 +48,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isAttacking = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool heavyAttack = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isAttackCharge = false;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -62,8 +74,10 @@ public:
 
 	void Attack();
 
+	virtual void HeavyAttack();
+
 	UFUNCTION(BlueprintCallable, Category = "Class Functions")
-	void StopAttack();
+	virtual void StopAttack();
 
 	UFUNCTION()
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent,

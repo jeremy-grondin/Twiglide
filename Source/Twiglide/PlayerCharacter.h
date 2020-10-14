@@ -62,7 +62,19 @@ public:
 
 	float hitCooldown = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float chargeAttackTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float chargeAttackTimer = 0.0f;
+
 	bool isHit = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isChargingAttack = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isDefending = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -104,6 +116,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void TakeDamage(int damage) override;
+
+	virtual void HeavyAttack() override;
+
+	void AttackRelease();
+
+	void Block();
+
+	void StopBlocking();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

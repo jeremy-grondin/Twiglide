@@ -62,14 +62,33 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
+		if (isAttackCharge)
+		{
+			if (!enemy->isDead)
+			{
+				FVector launch = { 0.0, 0.0f, 1000.0f };
+				enemy->LaunchCharacter(launch, true, true);
+			}
+		}
+
 		if (!enemy->isDead)
 			enemy->TakeDamage(damage);
+				
 	}
 	else if (OtherActor->Tags.Max() != 0
 		&& OtherActor->Tags[0] == "Player" && !ActorHasTag("Player"))
 	{
 		APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);
-		if(!player->isDead)
+
+		FVector pos = GetOwner()->GetActorLocation() - player->GetActorLocation();
+
+		if (player->isDefending)
+		{
+			//block forward attack
+			if (FVector::DotProduct(pos, player->GetActorForwardVector()) <= 0)
+				player->TakeDamage(damage);
+		}
+		else
 			player->TakeDamage(damage);
 	}
 }
@@ -79,10 +98,22 @@ void AGenericCharacter::Attack()
 	if(!isAttacking)
 		isAttacking = true;
 
+	damage = lightDamage;
+
 	attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AGenericCharacter::StopAttack()
 {
 	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	heavyAttack = false;
+}
+
+void AGenericCharacter::HeavyAttack()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "HeavyAttack");
+	Attack();
+
+	damage = heavyDamage;
+	heavyAttack = true;
 }

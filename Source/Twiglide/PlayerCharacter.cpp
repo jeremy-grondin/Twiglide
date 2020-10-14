@@ -114,6 +114,17 @@ void APlayerCharacter::Tick(float DeltaTime)
 			isHit = false;
 		}
 	}
+
+	if (isChargingAttack)
+	{
+		chargeAttackTimer += DeltaTime;
+		if (chargeAttackTimer >= chargeAttackTime)
+		{
+			isChargingAttack = false;
+			isAttackCharge = true;
+			chargeAttackTimer = false;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -131,6 +142,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("LightAttack", IE_Pressed, this, &APlayerCharacter::Attack);
 	PlayerInputComponent->BindAction("LightAttack", IE_Released, this, &APlayerCharacter::StopAttack);
 
+	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &APlayerCharacter::HeavyAttack);
+	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &APlayerCharacter::AttackRelease);
+
+	//Parry
+	PlayerInputComponent->BindAction("Parry", IE_Pressed, this, &APlayerCharacter::Block);
+	PlayerInputComponent->BindAction("Parry", IE_Released, this, &APlayerCharacter::StopBlocking);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
 
@@ -141,8 +159,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
-
-
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
@@ -197,7 +213,33 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 	if (!isHit)
 	{
 		Super::TakeDamage(damageTaken);
-
 		isHit = true;
 	}
+}
+
+void APlayerCharacter::HeavyAttack()
+{
+	isChargingAttack = true;
+}
+
+void APlayerCharacter::AttackRelease()
+{
+	Super::HeavyAttack();
+
+	if (isAttackCharge)
+		damage = heavyDamage * 2;
+	
+	isChargingAttack = false;
+	isAttackCharge = false;
+	chargeAttackTimer = 0.f;
+}
+
+void APlayerCharacter::Block()
+{
+	isDefending = true;
+}
+
+void APlayerCharacter::StopBlocking()
+{
+	isDefending = false;
 }
