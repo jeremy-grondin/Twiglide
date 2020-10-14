@@ -13,5 +13,5 @@ bool UMyBTDecorator_IsInRangeOfPlayer::CalculateRawConditionValue(UBehaviorTreeC
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AEnemy* enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 
-	return (enemy->GetActorLocation() - player->GetActorLocation()).Size() >= enemy->maxDistanceToPlayer;
+	return (enemy->GetActorLocation() - player->GetActorLocation()).Size() <= enemy->attackDistance;
 }

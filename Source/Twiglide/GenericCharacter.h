@@ -20,15 +20,22 @@ class TWIGLIDE_API AGenericCharacter : public ACharacter
 	GENERATED_BODY()
 
 private:
-	int life;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = Attacks, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* attackBox;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	int life;
+
 	int damage = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int lightDamage = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int heavyDamage = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	int maxLife = 5;
@@ -42,11 +49,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isAttacking = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool heavyAttack = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isAttackCharge = false;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Sets default values for this character's properties
 	AGenericCharacter();
 	
@@ -56,7 +70,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void TakeDamage(int damage);
+	virtual void TakeDamage(int damage);
+
+	void Attack();
+
+	virtual void HeavyAttack();
+
+	UFUNCTION(BlueprintCallable, Category = "Class Functions")
+	virtual void StopAttack();
 
 	UFUNCTION()
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent,

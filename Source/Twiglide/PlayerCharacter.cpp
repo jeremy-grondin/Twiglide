@@ -80,7 +80,7 @@ void APlayerCharacter::BeginPlay()
 /** Called function for dash*/
 void APlayerCharacter::Dash()
 {
-	if (canDash)
+	if (canDash && !isDead)
 	{
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 		if (targetLocked)
@@ -128,7 +128,27 @@ void APlayerCharacter::ResetDash()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (isHit)
+	{
+		hitCooldown += DeltaTime;
+		if (hitCooldown >= hitDelay)
+		{
+			hitCooldown = 0.f;
+			isHit = false;
+		}
+	}
 
+	if (isChargingAttack)
+	{
+		chargeAttackTimer += DeltaTime;
+		if (chargeAttackTimer >= chargeAttackTime)
+		{
+			isChargingAttack = false;
+			isAttackCharge = true;
+			chargeAttackTimer = false;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -146,6 +166,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("LightAttack", IE_Pressed, this, &APlayerCharacter::Attack);
 	PlayerInputComponent->BindAction("LightAttack", IE_Released, this, &APlayerCharacter::StopAttack);
 
+	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &APlayerCharacter::HeavyAttack);
+	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &APlayerCharacter::AttackRelease);
+
+	//Parry
+	PlayerInputComponent->BindAction("Parry", IE_Pressed, this, &APlayerCharacter::Block);
+	PlayerInputComponent->BindAction("Parry", IE_Released, this, &APlayerCharacter::StopBlocking);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
 
@@ -156,12 +183,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
-
-
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
 {
+	if (isDead)
+		return;
+		
 	if (!targetLocked)
 	{
 		// calculate delta for this frame from the rate information
@@ -171,13 +199,16 @@ void APlayerCharacter::TurnAtRate(float Rate)
 
 void APlayerCharacter::LookUpAtRate(float Rate)
 {
+	if (isDead)
+		return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL) && (Value != 0.0f) && !isDead)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -191,7 +222,7 @@ void APlayerCharacter::MoveForward(float Value)
 
 void APlayerCharacter::MoveRight(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL) && (Value != 0.0f) && !isDead)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -204,16 +235,38 @@ void APlayerCharacter::MoveRight(float Value)
 	}
 }
 
-void APlayerCharacter::Attack()
+void APlayerCharacter::TakeDamage(int damageTaken)
 {
-	if (!isAttacking)
+	if (!isHit)
 	{
-		isAttacking = true;
-		attackBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		Super::TakeDamage(damageTaken);
+		isHit = true;
 	}
 }
 
-void APlayerCharacter::StopAttack()
+void APlayerCharacter::HeavyAttack()
 {
-	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	isChargingAttack = true;
+}
+
+void APlayerCharacter::AttackRelease()
+{
+	Super::HeavyAttack();
+
+	if (isAttackCharge)
+		damage = heavyDamage * 2;
+	
+	isChargingAttack = false;
+	isAttackCharge = false;
+	chargeAttackTimer = 0.f;
+}
+
+void APlayerCharacter::Block()
+{
+	isDefending = true;
+}
+
+void APlayerCharacter::StopBlocking()
+{
+	isDefending = false;
 }

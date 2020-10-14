@@ -56,16 +56,34 @@ public:
 	/** Cooldown between dashes. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashCooldown;
+	 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float hitDelay = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool targetLocked;
 
 	UFUNCTION(BlueprintCallable)
 	void DisableMouseInput();
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	
 	AActor* targetedEnemy;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float hitCooldown = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float chargeAttackTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float chargeAttackTimer = 0.0f;
+
+	bool isHit = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isChargingAttack = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isDefending = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -89,10 +107,6 @@ protected:
 	/** Called for side to side input */
 	void MoveRight(float Value);
 
-	void Attack();
-
-	void StopAttack();
-
 	/**
 	 * Called via input to turn at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
@@ -112,6 +126,16 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void TakeDamage(int damage) override;
+
+	virtual void HeavyAttack() override;
+
+	void AttackRelease();
+
+	void Block();
+
+	void StopBlocking();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

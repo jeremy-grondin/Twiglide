@@ -4,6 +4,7 @@
 #include "MyBTTask_EnemyMoveTo.h"
 #include "GameFramework/Actor.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "CollisionQueryParams.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/EngineTypes.h"

@@ -23,5 +23,13 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (canAttack)
+	{
+		attackTimer += DeltaTime;
+		if (attackTimer >= attackCooldown)
+		{
+			attackTimer = 0.f;
+			canAttack = false;
+		}
+	}
 }
-
