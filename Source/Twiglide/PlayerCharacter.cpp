@@ -12,6 +12,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AttackComponent.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 
 // Sets default values
@@ -82,21 +83,39 @@ void APlayerCharacter::Dash()
 	if (canDash)
 	{
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		LaunchCharacter(FVector(this->GetActorForwardVector().X
-								, this->GetActorForwardVector().Y
-								,0).GetSafeNormal() * dashDistance
+		if (targetLocked)
+		{
+			FRotator targetRotate = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), targetedEnemy->GetActorLocation());
+			targetRotate.Pitch = 0.f;
+			SetActorRotation(targetRotate);
+			LaunchCharacter((targetedEnemy->GetActorLocation() - GetActorLocation())* 10, true, true);
+			GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopTargetDash, dashStop, false);
+		}
+		else
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("player state = %d"), GetCharacterMovement()->IsFalling() ));
+			LaunchCharacter(this->GetActorForwardVector() * dashDistance
 								, true
 								, true);
+			GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
+		}
 		canDash = false;
-		GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
+		
 	}
+}
+
+void APlayerCharacter::StopTargetDash()
+{
+	GetCharacterMovement()->StopMovementImmediately();
+	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
+	GetCharacterMovement()->BrakingFrictionFactor = 2.0f;
 }
 
 void APlayerCharacter::StopDashing()
 {
-	GetCharacterMovement()->StopMovementImmediately();
+	//GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
-	GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
 
 }
 

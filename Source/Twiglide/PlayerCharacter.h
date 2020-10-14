@@ -63,12 +63,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisableMouseInput();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* targetedEnemy;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	/** Called for the Dash input */
 	void Dash();
+
+	/** exclusif call for the target dash */
+	void StopTargetDash();
 
 	/** Called for stoping the dash */
 	void StopDashing();
