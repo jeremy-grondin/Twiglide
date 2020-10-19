@@ -57,25 +57,8 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 				bool bFromSweep,
 				const FHitResult& SweepResult)
 {
+	
 	if (OtherActor->Tags.Max() != 0
-		&& OtherActor->Tags[0] == "Enemy" && !ActorHasTag("Enemy"))
-	{
-		AEnemy* enemy = Cast<AEnemy>(OtherActor);
-
-		if (isAttackCharge)
-		{
-			if (!enemy->isDead)
-			{
-				FVector launch = { 0.0, 0.0f, 1000.0f };
-				enemy->LaunchCharacter(launch, true, true);
-			}
-		}
-
-		if (!enemy->isDead)
-			enemy->TakeDamage(damage);
-				
-	}
-	else if (OtherActor->Tags.Max() != 0
 		&& OtherActor->Tags[0] == "Player" && !ActorHasTag("Player"))
 	{
 		APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);

@@ -14,6 +14,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Enemy.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -183,7 +184,28 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+
+
+	// Target inputs //
+	/*
+	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
+	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::StopTarget);
+	
+	*/
 }
+
+/*
+void APlayerCharacter::Target()
+{
+
+}
+
+
+void APlayerCharacter::StopTarget()
+{
+}
+
+*/
 
 void APlayerCharacter::TurnAtRate(float Rate)
 {
@@ -270,3 +292,35 @@ void APlayerCharacter::StopBlocking()
 {
 	isDefending = false;
 }
+
+
+
+void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (OtherActor->Tags.Max() != 0
+		&& OtherActor->Tags[0] == "Enemy" && !ActorHasTag("Enemy"))
+	{
+		AEnemy* enemy = Cast<AEnemy>(OtherActor);
+
+		if (isAttackCharge)
+		{
+			if (!enemy->isDead)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
+				FVector launch = { 0.0, 0.0f, 1000.0f };
+				enemy->LaunchCharacter(launch, true, true);
+				targetedEnemy = enemy;
+			}
+		}
+
+		if (!enemy->isDead)
+			enemy->TakeDamage(damage);
+
+	}
+}
+
