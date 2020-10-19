@@ -244,6 +244,18 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 	}
 }
 
+void APlayerCharacter::Attack()
+{
+	if (canCombo)
+	{
+		GetWorldTimerManager().ClearTimer(timerHandler);
+		comboCounter++;
+	}
+	
+	Super::Attack();
+
+}
+
 void APlayerCharacter::HeavyAttack()
 {
 	isChargingAttack = true;
@@ -269,4 +281,27 @@ void APlayerCharacter::Block()
 void APlayerCharacter::StopBlocking()
 {
 	isDefending = false;
+}
+
+void APlayerCharacter::StartCombo()
+{
+	canCombo = true;
+}
+
+void APlayerCharacter::StopCombo()
+{
+	canCombo = false;
+	comboCounter = 0;
+}
+
+void APlayerCharacter::StopAttack()
+{
+	Super::StopAttack();
+
+	//Reset combo if it's the last combo
+	if (comboCounter >= 2)
+	{
+		canCombo = false;
+		comboCounter = 0;
+	}
 }

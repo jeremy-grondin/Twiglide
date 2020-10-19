@@ -72,7 +72,7 @@ public:
 
 	virtual void TakeDamage(int damage);
 
-	void Attack();
+	virtual void Attack();
 
 	virtual void HeavyAttack();
 
