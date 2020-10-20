@@ -31,6 +31,14 @@ void AGenericCharacter::BeginPlay()
 void AGenericCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (isHit)
+	{
+		hitStunTimer += DeltaTime;
+
+		if (hitStunTimer >= hitStunDuration)
+			isHit = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -72,8 +80,11 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		}
 
 		if (!enemy->isDead)
+		{
 			enemy->TakeDamage(damage);
-				
+			if(!enemy->isHit)
+				enemy->isHit = true;
+		}
 	}
 	else if (OtherActor->Tags.Max() != 0
 		&& OtherActor->Tags[0] == "Player" && !ActorHasTag("Player"))
@@ -89,7 +100,10 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 				player->TakeDamage(damage);
 		}
 		else
+		{
 			player->TakeDamage(damage);
+			//player->isHit = true;
+		}
 	}
 }
 
