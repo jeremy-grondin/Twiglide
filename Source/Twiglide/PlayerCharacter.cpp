@@ -12,8 +12,10 @@
 #include "GameFramework/PlayerController.h"
 #include "AttackComponent.h"
 #include "Components/BoxComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Math/Vector.h"
 #include "Enemy.h"
 
 // Sets default values
@@ -75,6 +77,9 @@ void APlayerCharacter::BeginPlay()
 	APlayerCameraManager* const cam_manager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	cam_manager->ViewPitchMin = pitchMin;
 	cam_manager->ViewPitchMax = pitchMax;
+
+	targetedEnemy = nullptr;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), enemies);
 	
 }
 
@@ -150,6 +155,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 			chargeAttackTimer = false;
 		}
 	}
+
+	if (targetLocked)
+		RinterpCamera();
+	
 }
 
 // Called to bind functionality to input
@@ -187,25 +196,62 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 
 	// Target inputs //
-	/*
-	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
-	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::StopTarget);
 	
-	*/
+	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
+	//PlayerInputComponent->BindAction("Target", IE_Repeat, this, &APlayerCharacter::Target);
+	PlayerInputComponent->BindAction("Target", IE_Released, this, &APlayerCharacter::StopTarget);
+	
+	
 }
 
-/*
+void APlayerCharacter::RinterpCamera()
+{
+	FRotator lookAtRotator = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetComponentLocation(), targetedEnemy->GetActorLocation());
+	FRotator tempPawnRotator = GetControlRotation();
+	FRotator lookAtInterp = UKismetMathLibrary::RInterpTo(tempPawnRotator, lookAtRotator, GetWorld()->GetDeltaSeconds(), 7.0f);
+	GetController()->SetControlRotation(UKismetMathLibrary::MakeRotator(tempPawnRotator.Roll, lookAtInterp.Pitch, lookAtInterp.Yaw));
+
+}
+
+/* a mettre dans enemy */
+TArray<AEnemy*> APlayerCharacter::GetAliveEnemies()
+{
+	TArray<AEnemy*> tempArray;
+	for (AActor * currentEnemy : enemies)
+	{
+		AEnemy* enemy = Cast<AEnemy>(currentEnemy);
+		if (!enemy->isDead)
+			tempArray.Add(enemy);
+	}
+	return tempArray;
+}
+
 void APlayerCharacter::Target()
 {
+	TArray<AEnemy*> aliveEnemies = GetAliveEnemies();
+	float dist = FLT_MAX;
+	float distTemp;
+	
 
+	for (AEnemy* currentEnemy : aliveEnemies)
+	{
+		distTemp = FVector::Dist(currentEnemy->GetActorLocation(), GetActorLocation());
+		if (distTemp < dist && distTemp <= maxLockRange)
+		{
+			
+			dist = distTemp;
+			targetedEnemy = currentEnemy;
+		}
+	}
+	if (targetedEnemy)
+		targetLocked = true;
 }
-
 
 void APlayerCharacter::StopTarget()
 {
+	targetLocked = false;
+	targetedEnemy = nullptr;
 }
-
-*/
 
 void APlayerCharacter::TurnAtRate(float Rate)
 {
@@ -311,7 +357,7 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			if (!enemy->isDead)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
 				FVector launch = { 0.0, 0.0f, 1000.0f };
 				enemy->LaunchCharacter(launch, true, true);
 				targetedEnemy = enemy;

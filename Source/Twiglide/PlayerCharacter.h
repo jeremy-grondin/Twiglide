@@ -25,6 +25,17 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 	UPROPERTY()
 	FTimerHandle unusedHandle;
 
+	void Target();
+	void StopTarget();
+
+	TArray<AActor*> enemies;
+
+
+	TArray<class AEnemy*> GetAliveEnemies();
+
+	void RinterpCamera();
+
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
@@ -93,6 +104,9 @@ public:
 			bool bFromSweep,
 			const FHitResult& SweepResult) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = LockFeature)
+	float maxLockRange;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -149,5 +163,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
 
 };
