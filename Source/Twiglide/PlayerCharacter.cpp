@@ -74,7 +74,6 @@ void APlayerCharacter::BeginPlay()
 	APlayerCameraManager* const cam_manager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	cam_manager->ViewPitchMin = pitchMin;
 	cam_manager->ViewPitchMax = pitchMax;
-	
 }
 
 /** Called function for dash*/

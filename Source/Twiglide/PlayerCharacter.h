@@ -95,9 +95,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isChargingAttack = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
-	bool isDefending = false;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

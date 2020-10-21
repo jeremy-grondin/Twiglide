@@ -58,6 +58,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isHit = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isDefending = false;
+
 	float hitStunTimer = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
