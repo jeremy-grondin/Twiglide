@@ -55,6 +55,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isAttackCharge = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isHit = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	bool isDefending = false;
+
+	float hitStunTimer = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float hitStunDuration = 1.0f;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,7 +83,7 @@ public:
 
 	virtual void TakeDamage(int damage);
 
-	void Attack();
+	virtual void Attack();
 
 	virtual void HeavyAttack();
 
