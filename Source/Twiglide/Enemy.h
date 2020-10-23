@@ -23,6 +23,8 @@ class TWIGLIDE_API AEnemy : public AGenericCharacter
 
 private:
 	class UMaterialInstanceDynamic* material;
+
+	FMaterialParameterInfo param;
 	
 public:
 	// Sets default values for this actor's properties
@@ -45,6 +47,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float attackCooldown = 2.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float attackDelay = 1.0f;
 
 	float attackTimer = 0.0f;
 
@@ -53,7 +58,6 @@ public:
 private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 
 public:
 	// Called every frame

@@ -5,14 +5,14 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/SkeletalMeshComponent.h"
 
-// Sets default values
 AEnemy::AEnemy()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	param.Name = "OnHit";
 }
 
-// Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
@@ -21,7 +21,6 @@ void AEnemy::BeginPlay()
 	GetMesh()->SetMaterial(0, material);
 }
 
-// Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -29,8 +28,9 @@ void AEnemy::Tick(float DeltaTime)
 	if (canAttack && !isHit)
 	{
 		attackTimer += DeltaTime;
-		if (attackTimer >= attackCooldown)
+		if (attackTimer >= attackDelay)
 		{
+			Attack();
 			attackTimer = 0.f;
 			canAttack = false;
 		}
@@ -38,15 +38,11 @@ void AEnemy::Tick(float DeltaTime)
 
 	float scalarValue = 0.0f;
 
-	FMaterialParameterInfo param;
-	param.Name = "OnHit";
-
 	material->GetScalarParameterValue(param, scalarValue);
 
 	if (scalarValue > 0.0f)
 	{
 		scalarValue -= DeltaTime;
-
 		material->SetScalarParameterValue("OnHit", scalarValue);
 	}
 }
