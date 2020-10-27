@@ -15,8 +15,6 @@ AGenericCharacter::AGenericCharacter()
 
 	attackBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	attackBox->SetupAttachment(RootComponent);
-
-	life = maxLife;
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +23,8 @@ void AGenericCharacter::BeginPlay()
 	Super::BeginPlay();
 	attackBox->OnComponentBeginOverlap.AddDynamic(this, &AGenericCharacter::OnOverlap);
 	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	life = maxLife;
 }
 
 // Called every frame
@@ -57,33 +57,15 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 				bool bFromSweep,
 				const FHitResult& SweepResult)
 {
+	
 	if (OtherActor->Tags.Max() != 0
-		&& OtherActor->Tags[0] == "Enemy" && !ActorHasTag("Enemy"))
-	{
-		AEnemy* enemy = Cast<AEnemy>(OtherActor);
-
-		if (isAttackCharge)
-		{
-			if (!enemy->isDead)
-			{
-				FVector launch = { 0.0, 0.0f, 1000.0f };
-				enemy->LaunchCharacter(launch, true, true);
-			}
-		}
-
-		if (!enemy->isDead)
-			enemy->TakeDamage(damage);
-				
-	}
-	else if (OtherActor->Tags.Max() != 0
 		&& OtherActor->Tags[0] == "Player" && !ActorHasTag("Player"))
 	{
 		APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);
 
-		FVector pos = GetOwner()->GetActorLocation() - player->GetActorLocation();
-
 		if (player->isDefending)
 		{
+			FVector pos = GetOwner()->GetActorLocation() - player->GetActorLocation();
 			//block forward attack
 			if (FVector::DotProduct(pos, player->GetActorForwardVector()) <= 0)
 				player->TakeDamage(damage);
