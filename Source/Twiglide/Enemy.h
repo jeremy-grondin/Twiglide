@@ -7,19 +7,24 @@
 #include "GenericCharacter.h"
 #include "Enemy.generated.h"
 
-UENUM()
-enum class E_EnemyType
+UENUM(BlueprintType)
+enum class E_EnemyType: uint8
 {
-	SwordShield,
-	Bow,
-	Scout,
-	Mannequin
+	SwordShield UMETA(DisplayName = "SwordAndShield"),
+	Bow UMETA(DisplayName = "Bow"),
+	Scout UMETA(DisplayName = "Scout"),
+	Mannequin UMETA(DisplayName = "Mannequin")
 };
 
 UCLASS()
 class TWIGLIDE_API AEnemy : public AGenericCharacter
 {
 	GENERATED_BODY()
+
+private:
+	class UMaterialInstanceDynamic* material;
+
+	FMaterialParameterInfo param;
 	
 public:
 	// Sets default values for this actor's properties
@@ -38,7 +43,13 @@ public:
 	float attackDistance = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float attackRange = 200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float attackCooldown = 2.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float attackDelay = 1.0f;
 
 	float attackTimer = 0.0f;
 
@@ -55,4 +66,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void TakeDamage(int damage) override;
 };

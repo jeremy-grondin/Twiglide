@@ -60,7 +60,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashDistance;
 
-	/** Time you qre effectively dashing*/
+	/** Time you are effectively dashing*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashStop;
 
@@ -73,6 +73,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool targetLocked;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool canCombo = false;
 
 	UFUNCTION(BlueprintCallable)
 	void DisableMouseInput();
@@ -89,13 +92,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float chargeAttackTimer = 0.0f;
 
+	FTimerHandle timerHandler;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int comboCounter = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float comboTime = 1.f;
+
+	//player is being hit by an attack
 	bool isHit = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isChargingAttack = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
-	bool isDefending = false;
 
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent,
 			AActor* OtherActor,
@@ -151,13 +160,22 @@ public:
 
 	void TakeDamage(int damage) override;
 
+	virtual void  Attack() override;
+
 	virtual void HeavyAttack() override;
+
+	virtual void StopAttack() override;
 
 	void AttackRelease();
 
 	void Block();
 
 	void StopBlocking();
+
+	void StartCombo();
+
+	UFUNCTION(BlueprintCallable, Category = "Class Functions")
+	void StopCombo();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
