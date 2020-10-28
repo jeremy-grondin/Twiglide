@@ -44,6 +44,9 @@ public:
 
 	bool canAttack = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isTargeted = false;
+
 private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

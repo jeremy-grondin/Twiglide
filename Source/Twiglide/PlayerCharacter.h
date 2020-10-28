@@ -78,7 +78,7 @@ public:
 	void DisableMouseInput();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* targetedEnemy;
+	AEnemy* targetedEnemy;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float hitCooldown = 0.0f;

@@ -220,7 +220,7 @@ TArray<AEnemy*> APlayerCharacter::GetAliveEnemies()
 	for (AActor * currentEnemy : enemies)
 	{
 		AEnemy* enemy = Cast<AEnemy>(currentEnemy);
-		if (!enemy->isDead)
+		if (enemy && !enemy->isDead)
 			tempArray.Add(enemy);
 	}
 	return tempArray;
@@ -244,13 +244,24 @@ void APlayerCharacter::Target()
 		}
 	}
 	if (targetedEnemy)
+	{
 		targetLocked = true;
+		targetedEnemy->isTargeted = true;
+	}
+		
 }
 
 void APlayerCharacter::StopTarget()
 {
 	targetLocked = false;
-	targetedEnemy = nullptr;
+
+	if (targetedEnemy)
+	{
+		targetedEnemy->isTargeted = false;
+		targetedEnemy = nullptr;
+	}
+
+	
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
