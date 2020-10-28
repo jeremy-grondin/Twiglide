@@ -35,6 +35,8 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 
 	void RinterpCamera();
 
+	float timeInCombo;
+
 
 public:
 	// Sets default values for this character's properties
@@ -94,11 +96,19 @@ public:
 
 	FTimerHandle timerHandler;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	int comboCounter = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float comboTime = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int numberofHits = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	float timeBetweenCombo = 2.0f;
+
 
 	//player is being hit by an attack
 	bool isHit = false;

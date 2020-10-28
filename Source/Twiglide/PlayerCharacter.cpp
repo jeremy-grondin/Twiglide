@@ -62,6 +62,8 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	timeInCombo = timeBetweenCombo;
 }
 
 void APlayerCharacter::DisableMouseInput()
@@ -158,6 +160,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	if (targetLocked)
 		RinterpCamera();
+	
+	if (timeInCombo <= 0)
+		numberofHits = 0;
+	else
+		timeInCombo -= DeltaTime;
 	
 }
 
@@ -398,15 +405,22 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge)
+		if ( isAttackCharge && !enemy->isDead)
 		{
-			if (!enemy->isDead)
-			{
 				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
 				FVector launch = { 0.0, 0.0f, 1000.0f };
 				enemy->LaunchCharacter(launch, true, true);
 				targetedEnemy = enemy;
-			}
+
+				if (timeInCombo <= 0)
+				{
+					numberofHits = 1;
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, "COMBO 1");
+				}
+				else
+					numberofHits++;
+
+				timeInCombo = timeBetweenCombo;
 		}
 
 		if (!enemy->isDead)
