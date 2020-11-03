@@ -35,7 +35,7 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 
 	void RinterpCamera();
 
-	float timeInCombo;
+	
 
 
 public:
@@ -108,6 +108,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	float timeBetweenCombo = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	float timeInCombo;
+
 
 
 	//player is being hit by an attack

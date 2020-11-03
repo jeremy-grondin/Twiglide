@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
+#include "Misc/OutputDeviceNull.h"
 #include "Enemy.h"
 
 // Sets default values
@@ -327,6 +328,12 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 	{
 		Super::TakeDamage(damageTaken);
 		isHit = true;
+		if (isDead)
+		{
+			FOutputDeviceNull ar;
+			CallFunctionByNameWithArguments(TEXT("EventDeathPlayer"), ar, NULL, true);
+		}
+			
 	}
 }
 
@@ -412,19 +419,20 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 				enemy->LaunchCharacter(launch, true, true);
 				targetedEnemy = enemy;
 
-				if (timeInCombo <= 0)
-				{
-					numberofHits = 1;
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, "COMBO 1");
-				}
-				else
-					numberofHits++;
-
-				timeInCombo = timeBetweenCombo;
 		}
 
 		if (!enemy->isDead)
 			enemy->TakeDamage(damage);
+
+		if (timeInCombo <= 0)
+		{
+			numberofHits = 1;
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, "COMBO 1");
+		}
+		else
+			numberofHits++;
+
+		timeInCombo = timeBetweenCombo;
 
 	}
 }
