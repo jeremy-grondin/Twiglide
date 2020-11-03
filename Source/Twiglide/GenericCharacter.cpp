@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "PlayerCharacter.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AGenericCharacter::AGenericCharacter()
@@ -31,6 +32,19 @@ void AGenericCharacter::BeginPlay()
 void AGenericCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (isInAirCombat)
+	{
+		GetCharacterMovement()->GravityScale = 0.0f;
+		airCombatTimer += DeltaTime;
+
+		if (airCombatTimer >= airCombatDuration)
+		{
+			GetCharacterMovement()->GravityScale = 1.0f;
+			airCombatTimer = 0.0f;
+			isInAirCombat = false;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -57,7 +71,6 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 				bool bFromSweep,
 				const FHitResult& SweepResult)
 {
-	
 	if (OtherActor->Tags.Max() != 0
 		&& OtherActor->Tags[0] == "Player" && !ActorHasTag("Player"))
 	{
@@ -98,4 +111,9 @@ void AGenericCharacter::HeavyAttack()
 
 	damage = heavyDamage;
 	heavyAttack = true;
+}
+
+void AGenericCharacter::freezeMovemnent()
+{
+	GetCharacterMovement()->StopMovementImmediately();
 }

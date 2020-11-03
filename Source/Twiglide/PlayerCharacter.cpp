@@ -17,6 +17,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
 #include "Enemy.h"
+#include "Engine/World.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -80,7 +82,6 @@ void APlayerCharacter::BeginPlay()
 
 	targetedEnemy = nullptr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), enemies);
-	
 }
 
 /** Called function for dash*/
@@ -106,7 +107,6 @@ void APlayerCharacter::Dash()
 			GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
 		}
 		canDash = false;
-		
 	}
 }
 
@@ -200,8 +200,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
 	//PlayerInputComponent->BindAction("Target", IE_Repeat, this, &APlayerCharacter::Target);
 	PlayerInputComponent->BindAction("Target", IE_Released, this, &APlayerCharacter::StopTarget);
-	
-	
 }
 
 void APlayerCharacter::RinterpCamera()
@@ -232,13 +230,11 @@ void APlayerCharacter::Target()
 	float dist = FLT_MAX;
 	float distTemp;
 	
-
 	for (AEnemy* currentEnemy : aliveEnemies)
 	{
 		distTemp = FVector::Dist(currentEnemy->GetActorLocation(), GetActorLocation());
 		if (distTemp < dist && distTemp <= maxLockRange)
 		{
-			
 			dist = distTemp;
 			targetedEnemy = currentEnemy;
 		}
@@ -321,7 +317,6 @@ void APlayerCharacter::Attack()
 	}
 	
 	Super::Attack();
-
 }
 
 void APlayerCharacter::HeavyAttack()
@@ -374,7 +369,6 @@ void APlayerCharacter::StopAttack()
 	}
 }
 
-
 void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -387,20 +381,20 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge)
+		if (isAttackCharge && !enemy->isDead)
 		{
-			if (!enemy->isDead)
-			{
 				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
 				FVector launch = { 0.0, 0.0f, 1000.0f };
 				enemy->LaunchCharacter(launch, true, true);
 				targetedEnemy = enemy;
-			}
+				GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 		}
 
 		if (!enemy->isDead)
+		{
+			enemy->isInAirCombat = true;
+			enemy->airCombatTimer = 0.0f;
 			enemy->TakeDamage(damage);
-
+		}
 	}
 }
-
