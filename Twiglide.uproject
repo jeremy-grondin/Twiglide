@@ -13,5 +13,19 @@
 				"AIModule"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
+			"Name": "NiagaraExtras",
+			"Enabled": true
+		},
+		{
+			"Name": "HoudiniNiagara",
+			"Enabled": true
+		}
 	]
 }
