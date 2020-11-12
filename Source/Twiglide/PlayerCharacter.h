@@ -30,7 +30,6 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 
 	TArray<AActor*> enemies;
 
-
 	TArray<class AEnemy*> GetAliveEnemies();
 
 	void RinterpCamera();
@@ -38,10 +37,14 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 	
 
 
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Save)
+	FVector checkPointLocation;
+	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;

@@ -81,6 +81,8 @@ void APlayerCharacter::BeginPlay()
 	cam_manager->ViewPitchMin = pitchMin;
 	cam_manager->ViewPitchMax = pitchMax;
 
+	checkPointLocation = GetActorLocation();
+
 	targetedEnemy = nullptr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), enemies);
 	
