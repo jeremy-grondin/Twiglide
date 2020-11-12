@@ -323,7 +323,6 @@ void APlayerCharacter::Attack()
 	}
 	
 	Super::Attack();
-
 }
 
 void APlayerCharacter::HeavyAttack()
@@ -376,7 +375,6 @@ void APlayerCharacter::StopAttack()
 	}
 }
 
-
 void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -389,20 +387,17 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge)
+		if (isAttackCharge && !enemy->isDead)
 		{
-			if (!enemy->isDead)
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
-				FVector launch = { 0.0, 0.0f, 1000.0f };
-				enemy->LaunchCharacter(launch, true, true);
-				targetedEnemy = enemy;
-			}
+			FVector launch = { 0.0, 0.0f, 1000.0f };
+			enemy->LaunchCharacter(launch, true, true);
+			targetedEnemy = enemy;
 		}
 
 		if (!enemy->isDead)
+		{
+			enemy->isHit = true;
 			enemy->TakeDamage(damage);
-
+		}
 	}
 }
-
