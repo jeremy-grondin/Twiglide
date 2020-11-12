@@ -73,7 +73,8 @@ public:
 	float freezePosition = 1.0f;
 
 	float airCombatTimer = 0.0f;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
 	bool isInAirCombat = false;
 
 

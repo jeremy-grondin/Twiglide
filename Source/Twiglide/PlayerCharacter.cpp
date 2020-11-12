@@ -122,7 +122,6 @@ void APlayerCharacter::StopDashing()
 	//GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
 	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
-
 }
 
 void APlayerCharacter::ResetDash()
