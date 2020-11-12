@@ -423,6 +423,7 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			enemy->isHit = true;
 			enemy->TakeDamage(damage);
+		}
 
 		if (timeInCombo <= 0)
 		{
