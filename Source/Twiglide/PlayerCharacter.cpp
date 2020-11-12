@@ -383,18 +383,19 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (isAttackCharge && !enemy->isDead)
 		{
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
-				FVector launch = { 0.0, 0.0f, 1000.0f };
-				enemy->LaunchCharacter(launch, true, true);
-				targetedEnemy = enemy;
-				GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
+			FVector launch = { 0.0, 0.0f, 1000.0f };
+			enemy->LaunchCharacter(launch, true, true);
+			targetedEnemy = enemy;
+			GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
+			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
+			enemy->isInAirCombat = true;
+			enemy->airCombatTimer = 0.0f;
+			isInAirCombat = true;
+			airCombatTimer = 0.0f;
 		}
 
 		if (!enemy->isDead)
-		{
-			enemy->isInAirCombat = true;
-			enemy->airCombatTimer = 0.0f;
 			enemy->TakeDamage(damage);
-		}
 	}
 }
