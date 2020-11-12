@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
+#include "Misc/OutputDeviceNull.h"
 #include "Enemy.h"
 
 // Sets default values
@@ -62,6 +63,8 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	timeInCombo = timeBetweenCombo;
 }
 
 void APlayerCharacter::DisableMouseInput()
@@ -77,6 +80,8 @@ void APlayerCharacter::BeginPlay()
 	APlayerCameraManager* const cam_manager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	cam_manager->ViewPitchMin = pitchMin;
 	cam_manager->ViewPitchMax = pitchMax;
+
+	checkPointLocation = GetActorLocation();
 
 	targetedEnemy = nullptr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), enemies);
@@ -159,6 +164,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 	if (targetLocked)
 		RinterpCamera();
 	
+	if (timeInCombo <= 0)
+		numberofHits = 0;
+	else
+		timeInCombo -= DeltaTime;
+	
 }
 
 // Called to bind functionality to input
@@ -220,7 +230,7 @@ TArray<AEnemy*> APlayerCharacter::GetAliveEnemies()
 	for (AActor * currentEnemy : enemies)
 	{
 		AEnemy* enemy = Cast<AEnemy>(currentEnemy);
-		if (!enemy->isDead)
+		if (enemy && !enemy->isDead)
 			tempArray.Add(enemy);
 	}
 	return tempArray;
@@ -244,13 +254,24 @@ void APlayerCharacter::Target()
 		}
 	}
 	if (targetedEnemy)
+	{
 		targetLocked = true;
+		targetedEnemy->isTargeted = true;
+	}
+		
 }
 
 void APlayerCharacter::StopTarget()
 {
 	targetLocked = false;
-	targetedEnemy = nullptr;
+
+	if (targetedEnemy)
+	{
+		targetedEnemy->isTargeted = false;
+		targetedEnemy = nullptr;
+	}
+
+	
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
@@ -309,6 +330,12 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 	{
 		Super::TakeDamage(damageTaken);
 		isHit = true;
+		if (isDead)
+		{
+			FOutputDeviceNull ar;
+			CallFunctionByNameWithArguments(TEXT("EventDeathPlayer"), ar, NULL, true);
+		}
+			
 	}
 }
 
@@ -321,7 +348,6 @@ void APlayerCharacter::Attack()
 	}
 	
 	Super::Attack();
-
 }
 
 void APlayerCharacter::HeavyAttack()
@@ -374,7 +400,6 @@ void APlayerCharacter::StopAttack()
 	}
 }
 
-
 void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -387,20 +412,28 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge)
+		if (isAttackCharge && !enemy->isDead)
 		{
-			if (!enemy->isDead)
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
-				FVector launch = { 0.0, 0.0f, 1000.0f };
-				enemy->LaunchCharacter(launch, true, true);
-				targetedEnemy = enemy;
-			}
+			FVector launch = { 0.0, 0.0f, 1000.0f };
+			enemy->LaunchCharacter(launch, true, true);
+			targetedEnemy = enemy;
 		}
 
 		if (!enemy->isDead)
+		{
+			enemy->isHit = true;
 			enemy->TakeDamage(damage);
+		}
+
+		if (timeInCombo <= 0)
+		{
+			numberofHits = 1;
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, "COMBO 1");
+		}
+		else
+			numberofHits++;
+
+		timeInCombo = timeBetweenCombo;
 
 	}
 }
-

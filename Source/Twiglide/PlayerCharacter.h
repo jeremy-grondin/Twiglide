@@ -30,16 +30,21 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 
 	TArray<AActor*> enemies;
 
-
 	TArray<class AEnemy*> GetAliveEnemies();
 
 	void RinterpCamera();
+
+	
+
 
 
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Save)
+	FVector checkPointLocation;
+	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
@@ -81,7 +86,7 @@ public:
 	void DisableMouseInput();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* targetedEnemy;
+	AEnemy* targetedEnemy;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float hitCooldown = 0.0f;
@@ -94,11 +99,23 @@ public:
 
 	FTimerHandle timerHandler;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	int comboCounter = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float comboTime = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	int numberofHits = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	float timeBetweenCombo = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	float timeInCombo;
+
+
 
 	//player is being hit by an attack
 	bool isHit = false;
@@ -158,6 +175,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void TakeDamage(int damage) override;
 
 	virtual void  Attack() override;
