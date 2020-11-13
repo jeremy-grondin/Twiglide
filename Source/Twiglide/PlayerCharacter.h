@@ -98,6 +98,7 @@ public:
 	float chargeAttackTimer = 0.0f;
 
 	FTimerHandle timerHandler;
+	FTimerHandle timerHandlerFreezeMovement;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
@@ -199,7 +200,4 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-
-
 };

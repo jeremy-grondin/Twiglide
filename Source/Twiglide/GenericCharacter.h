@@ -66,6 +66,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float hitStunDuration = 1.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float airCombatDuration = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
+	float freezePosition = 1.0f;
+
+	float airCombatTimer = 0.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+	bool isInAirCombat = false;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -86,6 +97,8 @@ public:
 	virtual void Attack();
 
 	virtual void HeavyAttack();
+
+	void freezeMovemnent();
 
 	UFUNCTION(BlueprintCallable, Category = "Class Functions")
 	virtual void StopAttack();

@@ -18,6 +18,8 @@
 #include "Math/Vector.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Enemy.h"
+#include "Engine/World.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -85,7 +87,6 @@ void APlayerCharacter::BeginPlay()
 
 	targetedEnemy = nullptr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), enemies);
-	
 }
 
 /** Called function for dash*/
@@ -104,14 +105,12 @@ void APlayerCharacter::Dash()
 		}
 		else
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("player state = %d"), GetCharacterMovement()->IsFalling() ));
 			LaunchCharacter(this->GetActorForwardVector() * dashDistance
 								, true
 								, true);
 			GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
 		}
 		canDash = false;
-		
 	}
 }
 
@@ -127,7 +126,6 @@ void APlayerCharacter::StopDashing()
 	//GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
 	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
-
 }
 
 void APlayerCharacter::ResetDash()
@@ -210,8 +208,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
 	//PlayerInputComponent->BindAction("Target", IE_Repeat, this, &APlayerCharacter::Target);
 	PlayerInputComponent->BindAction("Target", IE_Released, this, &APlayerCharacter::StopTarget);
-	
-	
 }
 
 void APlayerCharacter::RinterpCamera()
@@ -242,13 +238,11 @@ void APlayerCharacter::Target()
 	float dist = FLT_MAX;
 	float distTemp;
 	
-
 	for (AEnemy* currentEnemy : aliveEnemies)
 	{
 		distTemp = FVector::Dist(currentEnemy->GetActorLocation(), GetActorLocation());
 		if (distTemp < dist && distTemp <= maxLockRange)
 		{
-			
 			dist = distTemp;
 			targetedEnemy = currentEnemy;
 		}
@@ -423,17 +417,22 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			enemy->isHit = true;
 			enemy->TakeDamage(damage);
+			GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
+			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
+			enemy->isInAirCombat = true;
+			enemy->airCombatTimer = 0.0f;
+			isInAirCombat = true;
+			airCombatTimer = 0.0f;
+			enemy->TakeDamage(damage);
 		}
 
 		if (timeInCombo <= 0)
 		{
 			numberofHits = 1;
-			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, "COMBO 1");
 		}
 		else
 			numberofHits++;
 
 		timeInCombo = timeBetweenCombo;
-
 	}
 }
