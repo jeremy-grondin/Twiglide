@@ -39,7 +39,6 @@ void AGenericCharacter::Tick(float DeltaTime)
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
 		if (airCombatTimer >= airCombatDuration)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Not in air combat");
 			GetCharacterMovement()->GravityScale = 1.0f;
 			airCombatTimer = 0.0f;
 			isInAirCombat = false;

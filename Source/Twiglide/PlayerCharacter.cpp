@@ -100,7 +100,6 @@ void APlayerCharacter::Dash()
 		}
 		else
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("player state = %d"), GetCharacterMovement()->IsFalling() ));
 			LaunchCharacter(this->GetActorForwardVector() * dashDistance
 								, true
 								, true);
@@ -382,19 +381,20 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (isAttackCharge && !enemy->isDead)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "GET LAUNCH");
 			FVector launch = { 0.0, 0.0f, 1000.0f };
 			enemy->LaunchCharacter(launch, true, true);
 			targetedEnemy = enemy;
+		}
+
+		if (!enemy->isDead)
+		{
 			GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 			enemy->isInAirCombat = true;
 			enemy->airCombatTimer = 0.0f;
 			isInAirCombat = true;
 			airCombatTimer = 0.0f;
-		}
-
-		if (!enemy->isDead)
 			enemy->TakeDamage(damage);
+		}
 	}
 }
