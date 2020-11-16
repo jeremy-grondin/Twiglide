@@ -53,6 +53,12 @@ void AEnemy::TakeDamage(int damageTaken)
 
 	material->SetScalarParameterValue("OnHit", 1.0f);
 
+<<<<<<< HEAD
 	//if(isDead)
 	//	SetActorEnableCollision(false);
+=======
+	/*
+	if(isDead)
+		SetActorEnableCollision(false);*/
+>>>>>>> dev
 }
