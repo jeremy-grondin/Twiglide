@@ -33,17 +33,6 @@ void AGenericCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (isInAirCombat)
-	{
-		airCombatTimer += DeltaTime;
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
-		if (airCombatTimer >= airCombatDuration)
-		{
-			GetCharacterMovement()->GravityScale = 1.0f;
-			airCombatTimer = 0.0f;
-			isInAirCombat = false;
-		}
-	}
 }
 
 // Called to bind functionality to input

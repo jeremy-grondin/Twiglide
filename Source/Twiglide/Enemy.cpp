@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AEnemy::AEnemy()
 {
@@ -44,6 +45,18 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		scalarValue -= DeltaTime;
 		material->SetScalarParameterValue("OnHit", scalarValue);
+	}
+
+	if (isInAirCombat)
+	{
+		airCombatTimer += DeltaTime;
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
+		if (airCombatTimer >= airCombatDuration)
+		{
+			GetCharacterMovement()->GravityScale = 1.0f;
+			airCombatTimer = 0.0f;
+			isInAirCombat = false;
+		}
 	}
 }
 
