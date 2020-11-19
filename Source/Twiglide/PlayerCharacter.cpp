@@ -137,16 +137,6 @@ void APlayerCharacter::ResetDash()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (isHit)
-	{
-		hitCooldown += DeltaTime;
-		if (hitCooldown >= hitDelay)
-		{
-			hitCooldown = 0.f;
-			isHit = false;
-		}
-	}
 
 	if (isChargingAttack)
 	{
@@ -329,12 +319,15 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 			FOutputDeviceNull ar;
 			CallFunctionByNameWithArguments(TEXT("EventDeathPlayer"), ar, NULL, true);
 		}
-			
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "GetHit");
 	}
 }
 
 void APlayerCharacter::Attack()
 {
+	if (isHit)
+		return;
+
 	if (canCombo)
 	{
 		GetWorldTimerManager().ClearTimer(timerHandler);
@@ -346,6 +339,9 @@ void APlayerCharacter::Attack()
 
 void APlayerCharacter::HeavyAttack()
 {
+	if (isHit)
+		return;
+
 	isChargingAttack = true;
 }
 
@@ -357,7 +353,6 @@ void APlayerCharacter::AttackRelease()
 		damage = heavyDamage * 2;
 	
 	isChargingAttack = false;
-	isAttackCharge = false;
 	chargeAttackTimer = 0.f;
 }
 
@@ -406,7 +401,7 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge && !enemy->isDead)
+		if (isAttackCharge && !enemy->isDead )
 		{
 			FVector launch = { 0.0, 0.0f, 1000.0f };
 			enemy->LaunchCharacter(launch, true, true);

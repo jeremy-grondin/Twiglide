@@ -84,6 +84,8 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		}
 		else
 			player->TakeDamage(damage);
+		
+			
 	}
 }
 

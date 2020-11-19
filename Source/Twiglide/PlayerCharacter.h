@@ -116,11 +116,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	float timeInCombo;
 
-
-
-	//player is being hit by an attack
-	bool isHit = false;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isChargingAttack = false;
 
