@@ -6,6 +6,8 @@
 #include "Enemy.h"
 #include "PlayerCharacter.h"
 #include "Components/BoxComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -16,6 +18,17 @@ AGenericCharacter::AGenericCharacter()
 
 	attackBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	attackBox->SetupAttachment(RootComponent);
+
+	param.Name = "OnHit";
+}
+
+void AGenericCharacter::CheckScalarValue(float value,float deltaTime)
+{
+	if (value > 0.0f)
+	{
+		value -= deltaTime;
+		material->SetScalarParameterValue("OnHit", value);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -24,6 +37,9 @@ void AGenericCharacter::BeginPlay()
 	Super::BeginPlay();
 	attackBox->OnComponentBeginOverlap.AddDynamic(this, &AGenericCharacter::OnOverlap);
 	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	material = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+	GetMesh()->SetMaterial(0, material);
 
 	life = maxLife;
 }
@@ -44,6 +60,14 @@ void AGenericCharacter::Tick(float DeltaTime)
 			isInAirCombat = false;
 		}
 	}
+
+	float scalarValue = 0.0f;
+
+	material->GetScalarParameterValue(param, scalarValue);
+
+	CheckScalarValue(scalarValue, DeltaTime);
+
+	
 }
 
 // Called to bind functionality to input
@@ -61,6 +85,8 @@ void AGenericCharacter::TakeDamage(int damageTaken)
 		life = 0;
 		isDead = true;
 	}
+
+	material->SetScalarParameterValue("OnHit", 1.0f);
 }
 
 void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,

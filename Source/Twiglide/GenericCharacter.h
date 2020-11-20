@@ -26,6 +26,12 @@ protected:
 	class UBoxComponent* attackBox;
 
 public:
+
+	class UMaterialInstanceDynamic* material;
+	FMaterialParameterInfo param;
+
+	virtual void CheckScalarValue(float value, float deltaTime);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	int life;
 

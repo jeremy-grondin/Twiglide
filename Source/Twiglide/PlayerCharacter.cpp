@@ -40,6 +40,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// set the dash Mechanic values
 	canDash = true;
+	isDashing = false;
 	dashDistance = 6000.0f;
 	dashCooldown = 1.0f;
 	dashStop = 0.1f;
@@ -67,6 +68,14 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	timeInCombo = timeBetweenCombo;
+}
+
+void APlayerCharacter::CheckScalarValue(float value, float deltaTime)
+{
+	Super::CheckScalarValue(value, deltaTime);
+
+	if (value <= 0)
+		isHit = false;
 }
 
 void APlayerCharacter::DisableMouseInput()
@@ -111,13 +120,16 @@ void APlayerCharacter::Dash()
 			GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
 		}
 		canDash = false;
+		isDashing = true;
 	}
 }
 
 void APlayerCharacter::StopTargetDash()
 {
+	
 	GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
+	isDashing = false;
 	GetCharacterMovement()->BrakingFrictionFactor = 2.0f;
 }
 
@@ -125,6 +137,7 @@ void APlayerCharacter::StopDashing()
 {
 	//GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
+	isDashing = false;
 	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
 }
 
@@ -325,8 +338,6 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 
 void APlayerCharacter::Attack()
 {
-	if (isHit)
-		return;
 
 	if (canCombo)
 	{
@@ -339,9 +350,6 @@ void APlayerCharacter::Attack()
 
 void APlayerCharacter::HeavyAttack()
 {
-	if (isHit)
-		return;
-
 	isChargingAttack = true;
 }
 
