@@ -407,7 +407,7 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (isAttackCharge && !enemy->isDead)
 		{
-			FVector launch = { 0.0, 0.0f, 1000.0f };
+			FVector launch = { 0.0, 0.0f, bumpForce };
 			enemy->LaunchCharacter(launch, true, true);
 			targetedEnemy = enemy;
 			targetLocked = true;
@@ -419,11 +419,15 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 			
 			AirAttack();
+			enemy->AirAttack();
+
+			GetWorld()->GetTimerManager().ClearTimer(enemy->airAttackTimerHandler);
+			GetWorld()->GetTimerManager().SetTimer(enemy->airAttackTimerHandler, enemy, &AGenericCharacter::StopAirAttack, timeInAirCombat, false);
+
 			GetWorld()->GetTimerManager().ClearTimer(airAttackTimerHandler);
-			GetWorld()->GetTimerManager().SetTimer(airAttackTimerHandler, this, &APlayerCharacter::StopAirAttack, timeInAirCombat, false);
+			GetWorld()->GetTimerManager().SetTimer(airAttackTimerHandler, this, &AGenericCharacter::StopAirAttack, timeInAirCombat, false);
 			
 			enemy->isHit = true;
-			enemy->airCombatTimer = 0.f;
 			enemy->TakeDamage(damage);
 		}
 
@@ -434,22 +438,4 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		timeInCombo = timeBetweenCombo;
 	}
-}
-
-void APlayerCharacter::AirAttack()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
-	isInAirCombat = true;
-	airCombatTimer = 0.0f;
-	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Flying;
-	GetCharacterMovement()->GravityScale = 0.f;
-}
-
-void APlayerCharacter::StopAirAttack()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Not In AirCombat");
-	isInAirCombat = false;
-	airCombatTimer = timeBetweenCombo;
-	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Falling;
-	GetCharacterMovement()->GravityScale = 1.f;
 }

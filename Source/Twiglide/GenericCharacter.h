@@ -72,10 +72,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float freezePosition = 1.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
+	float timeInAirCombat = 1.0f;
+
 	float airCombatTimer = 0.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
 	bool isInAirCombat = false;
+
+	FTimerHandle airAttackTimerHandler;
 
 
 protected:
@@ -99,6 +104,10 @@ public:
 	virtual void HeavyAttack();
 
 	void freezeMovemnent();
+
+	void AirAttack();
+
+	void StopAirAttack();
 
 	UFUNCTION(BlueprintCallable, Category = "Class Functions")
 	virtual void StopAttack();

@@ -8,7 +8,6 @@
 
 AEnemy::AEnemy()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	param.Name = "OnHit";
@@ -47,7 +46,7 @@ void AEnemy::Tick(float DeltaTime)
 		material->SetScalarParameterValue("OnHit", scalarValue);
 	}
 
-	if (isInAirCombat)
+	/*if (isInAirCombat)
 	{
 		airCombatTimer += DeltaTime;
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
@@ -57,7 +56,7 @@ void AEnemy::Tick(float DeltaTime)
 			airCombatTimer = 0.0f;
 			isInAirCombat = false;
 		}
-	}
+	}*/
 }
 
 void AEnemy::TakeDamage(int damageTaken)
@@ -66,7 +65,6 @@ void AEnemy::TakeDamage(int damageTaken)
 
 	material->SetScalarParameterValue("OnHit", 1.0f);
 
-	/*
-	if(isDead)
+	/*if (isDead)
 		SetActorEnableCollision(false);*/
 }

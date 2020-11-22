@@ -94,8 +94,6 @@ public:
 	float chargeAttackTimer = 0.0f;
 
 	FTimerHandle timerHandler;
-
-	FTimerHandle airAttackTimerHandler;
 	
 	FTimerHandle timerHandlerFreezeMovement;
 
@@ -115,7 +113,8 @@ public:
 	float timeInCombo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
-	float timeInAirCombat = 1.0f;
+	float bumpForce = 1000.f;
+	
 
 	//player is being hit by an attack
 	bool isHit = false;
@@ -191,10 +190,6 @@ public:
 	void StopBlocking();
 
 	void StartCombo();
-
-	void AirAttack();
-
-	void StopAirAttack();
 
 	UFUNCTION(BlueprintCallable, Category = "Class Functions")
 	void StopCombo();
