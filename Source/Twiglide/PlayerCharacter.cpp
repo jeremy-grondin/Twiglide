@@ -329,7 +329,6 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 			FOutputDeviceNull ar;
 			CallFunctionByNameWithArguments(TEXT("EventDeathPlayer"), ar, NULL, true);
 		}
-			
 	}
 }
 
@@ -408,28 +407,32 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (isAttackCharge && !enemy->isDead)
 		{
-			FVector launch = { 0.0, 0.0f, 1000.0f };
+			FVector launch = { 0.0, 0.0f, bumpForce };
 			enemy->LaunchCharacter(launch, true, true);
 			targetedEnemy = enemy;
+			targetLocked = true;
 		}
 
 		if (!enemy->isDead)
 		{
-			enemy->isHit = true;
-			enemy->TakeDamage(damage);
 			GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
-			enemy->isInAirCombat = true;
-			enemy->airCombatTimer = 0.0f;
-			isInAirCombat = true;
-			airCombatTimer = 0.0f;
+			
+			AirAttack();
+			enemy->AirAttack();
+
+			GetWorld()->GetTimerManager().ClearTimer(enemy->airAttackTimerHandler);
+			GetWorld()->GetTimerManager().SetTimer(enemy->airAttackTimerHandler, enemy, &AGenericCharacter::StopAirAttack, timeInAirCombat, false);
+
+			GetWorld()->GetTimerManager().ClearTimer(airAttackTimerHandler);
+			GetWorld()->GetTimerManager().SetTimer(airAttackTimerHandler, this, &AGenericCharacter::StopAirAttack, timeInAirCombat, false);
+			
+			enemy->isHit = true;
 			enemy->TakeDamage(damage);
 		}
 
 		if (timeInCombo <= 0)
-		{
 			numberofHits = 1;
-		}
 		else
 			numberofHits++;
 

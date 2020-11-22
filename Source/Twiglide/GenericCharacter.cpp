@@ -32,18 +32,6 @@ void AGenericCharacter::BeginPlay()
 void AGenericCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (isInAirCombat)
-	{
-		airCombatTimer += DeltaTime;
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
-		if (airCombatTimer >= airCombatDuration)
-		{
-			GetCharacterMovement()->GravityScale = 1.0f;
-			airCombatTimer = 0.0f;
-			isInAirCombat = false;
-		}
-	}
 }
 
 // Called to bind functionality to input
@@ -116,4 +104,20 @@ void AGenericCharacter::freezeMovemnent()
 {
 	GetCharacterMovement()->StopMovementImmediately();
 	GetCharacterMovement()->GravityScale = 0.0f;
+}
+
+void AGenericCharacter::AirAttack()
+{
+	isInAirCombat = true;
+	airCombatTimer = 0.0f;
+	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Flying;
+	GetCharacterMovement()->GravityScale = 0.f;
+}
+
+void AGenericCharacter::StopAirAttack()
+{
+	isInAirCombat = false;
+	airCombatTimer = timeInAirCombat;
+	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Falling;
+	GetCharacterMovement()->GravityScale = 1.f;
 }

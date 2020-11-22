@@ -4,10 +4,10 @@
 #include "Enemy.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AEnemy::AEnemy()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	param.Name = "OnHit";
@@ -45,6 +45,18 @@ void AEnemy::Tick(float DeltaTime)
 		scalarValue -= DeltaTime;
 		material->SetScalarParameterValue("OnHit", scalarValue);
 	}
+
+	/*if (isInAirCombat)
+	{
+		airCombatTimer += DeltaTime;
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
+		if (airCombatTimer >= airCombatDuration)
+		{
+			GetCharacterMovement()->GravityScale = 1.0f;
+			airCombatTimer = 0.0f;
+			isInAirCombat = false;
+		}
+	}*/
 }
 
 void AEnemy::TakeDamage(int damageTaken)
@@ -53,7 +65,6 @@ void AEnemy::TakeDamage(int damageTaken)
 
 	material->SetScalarParameterValue("OnHit", 1.0f);
 
-	/*
-	if(isDead)
+	/*if (isDead)
 		SetActorEnableCollision(false);*/
 }
