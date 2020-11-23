@@ -6,12 +6,6 @@
 #include "GameFramework/Character.h"
 #include "GenericCharacter.generated.h"
 
-UENUM(BlueprintType)
-enum EAttackType
-{
-	Light,
-	Heavy
-};
 
 
 UCLASS()
@@ -48,9 +42,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isDead = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
-	TEnumAsByte<EAttackType> attackType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isAttacking = false;
@@ -110,10 +101,6 @@ public:
 	virtual void HeavyAttack();
 
 	void freezeMovemnent();
-
-	void AirAttack();
-
-	void StopAirAttack();
 
 	UFUNCTION(BlueprintCallable, Category = "Class Functions")
 	virtual void StopAttack();

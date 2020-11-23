@@ -52,7 +52,6 @@ void AGenericCharacter::Tick(float DeltaTime)
 	if (isInAirCombat)
 	{
 		airCombatTimer += DeltaTime;
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
 		if (airCombatTimer >= airCombatDuration)
 		{
 			GetCharacterMovement()->GravityScale = 1.0f;
@@ -133,7 +132,6 @@ void AGenericCharacter::StopAttack()
 
 void AGenericCharacter::HeavyAttack()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "HeavyAttack");
 	Attack();
 
 	damage = heavyDamage;

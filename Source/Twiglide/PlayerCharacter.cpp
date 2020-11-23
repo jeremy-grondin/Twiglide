@@ -18,14 +18,13 @@
 #include "Math/Vector.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Enemy.h"
+#include "Twiglide_Instance.h"
 #include "Engine/World.h"
 
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	//PrimaryActorTick.bCanEverTick = true;
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -78,10 +77,6 @@ void APlayerCharacter::CheckScalarValue(float value, float deltaTime)
 		isHit = false;
 }
 
-void APlayerCharacter::DisableMouseInput()
-{
-	//InputComponent->RemoveActionBindingForHandle("Turn"->getHandle());
-}
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
@@ -126,7 +121,6 @@ void APlayerCharacter::Dash()
 
 void APlayerCharacter::StopTargetDash()
 {
-	
 	GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
 	isDashing = false;
@@ -135,7 +129,6 @@ void APlayerCharacter::StopTargetDash()
 
 void APlayerCharacter::StopDashing()
 {
-	//GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
 	isDashing = false;
 	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
@@ -209,7 +202,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// Target inputs //
 	
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
-	//PlayerInputComponent->BindAction("Target", IE_Repeat, this, &APlayerCharacter::Target);
 	PlayerInputComponent->BindAction("Target", IE_Released, this, &APlayerCharacter::StopTarget);
 }
 
@@ -222,7 +214,6 @@ void APlayerCharacter::RinterpCamera()
 
 }
 
-/* a mettre dans enemy */
 TArray<AEnemy*> APlayerCharacter::GetAliveEnemies()
 {
 	TArray<AEnemy*> tempArray;
@@ -275,11 +266,16 @@ void APlayerCharacter::TurnAtRate(float Rate)
 {
 	if (isDead)
 		return;
+
+	UTwiglide_Instance* gameInstance = Cast<UTwiglide_Instance>(GetGameInstance());
 		
 	if (!targetLocked)
 	{
 		// calculate delta for this frame from the rate information
-		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		if (gameInstance && gameInstance->bInverseXAxis)
+			AddControllerYawInput(-Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		else
+			AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
@@ -288,8 +284,14 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 	if (isDead)
 		return;
 
+	UTwiglide_Instance* gameInstance = Cast<UTwiglide_Instance>(GetGameInstance());
+
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (gameInstance && gameInstance->bInverseYAxis)
+		AddControllerPitchInput(-Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	else
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+
 }
 
 void APlayerCharacter::MoveForward(float Value)
@@ -332,7 +334,6 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 			FOutputDeviceNull ar;
 			CallFunctionByNameWithArguments(TEXT("EventDeathPlayer"), ar, NULL, true);
 		}
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "GetHit");
 	}
 }
 
@@ -409,23 +410,29 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge && !enemy->isDead )
-		{
-			FVector launch = { 0.0, 0.0f, 1000.0f };
-			enemy->LaunchCharacter(launch, true, true);
-			targetedEnemy = enemy;
-		}
-
 		if (!enemy->isDead)
 		{
+
+			if (isAttackCharge)
+			{
+				FVector launch = { 0.0, 0.0f, 1000.0f };
+				enemy->LaunchCharacter(launch, true, true);
+				targetLocked = true;
+				targetedEnemy = enemy;
+			}
+
 			enemy->isHit = true;
 			enemy->TakeDamage(damage);
+
 			GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
+
 			enemy->isInAirCombat = true;
 			enemy->airCombatTimer = 0.0f;
+
 			isInAirCombat = true;
 			airCombatTimer = 0.0f;
+
 			enemy->TakeDamage(damage);
 		}
 
