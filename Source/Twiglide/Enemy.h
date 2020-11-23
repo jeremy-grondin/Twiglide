@@ -7,15 +7,6 @@
 #include "GenericCharacter.h"
 #include "Enemy.generated.h"
 
-UENUM(BlueprintType)
-enum class E_EnemyType: uint8
-{
-	SwordShield UMETA(DisplayName = "SwordAndShield"),
-	Bow UMETA(DisplayName = "Bow"),
-	Scout UMETA(DisplayName = "Scout"),
-	Mannequin UMETA(DisplayName = "Mannequin")
-};
-
 UCLASS()
 class TWIGLIDE_API AEnemy : public AGenericCharacter
 {
@@ -26,9 +17,6 @@ private:
 public:
 	// Sets default values for this actor's properties
 	AEnemy();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
-	E_EnemyType enemyType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float minDistanceToPlayer = 300.f;

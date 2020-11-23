@@ -18,6 +18,7 @@
 #include "Math/Vector.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Enemy.h"
+#include "Twiglide_Instance.h"
 #include "Engine/World.h"
 
 
@@ -265,11 +266,16 @@ void APlayerCharacter::TurnAtRate(float Rate)
 {
 	if (isDead)
 		return;
+
+	UTwiglide_Instance* gameInstance = Cast<UTwiglide_Instance>(GetGameInstance());
 		
 	if (!targetLocked)
 	{
 		// calculate delta for this frame from the rate information
-		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		if (gameInstance && gameInstance->bInverseXAxis)
+			AddControllerYawInput(-Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		else
+			AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
@@ -278,8 +284,14 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 	if (isDead)
 		return;
 
+	UTwiglide_Instance* gameInstance = Cast<UTwiglide_Instance>(GetGameInstance());
+
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (gameInstance && gameInstance->bInverseYAxis)
+		AddControllerPitchInput(-Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	else
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+
 }
 
 void APlayerCharacter::MoveForward(float Value)

@@ -16,7 +16,6 @@ void AEnemyAIController::BeginPlay()
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	enemy = Cast<AEnemy>(GetPawn());
-	Blackboard->SetValueAsEnum("EnemyType", (int8)enemy->enemyType);
 }
 
 void AEnemyAIController::Tick(float DeltaTime)
