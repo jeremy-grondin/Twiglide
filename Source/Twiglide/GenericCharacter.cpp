@@ -6,6 +6,8 @@
 #include "Enemy.h"
 #include "PlayerCharacter.h"
 #include "Components/BoxComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -16,6 +18,17 @@ AGenericCharacter::AGenericCharacter()
 
 	attackBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	attackBox->SetupAttachment(RootComponent);
+
+	param.Name = "OnHit";
+}
+
+void AGenericCharacter::CheckScalarValue(float value,float deltaTime)
+{
+	if (value > 0.0f)
+	{
+		value -= deltaTime;
+		material->SetScalarParameterValue("OnHit", value);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +38,9 @@ void AGenericCharacter::BeginPlay()
 	attackBox->OnComponentBeginOverlap.AddDynamic(this, &AGenericCharacter::OnOverlap);
 	attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	material = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+	GetMesh()->SetMaterial(0, material);
+
 	life = maxLife;
 }
 
@@ -32,6 +48,26 @@ void AGenericCharacter::BeginPlay()
 void AGenericCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (isInAirCombat)
+	{
+		airCombatTimer += DeltaTime;
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
+		if (airCombatTimer >= airCombatDuration)
+		{
+			GetCharacterMovement()->GravityScale = 1.0f;
+			airCombatTimer = 0.0f;
+			isInAirCombat = false;
+		}
+	}
+
+	float scalarValue = 0.0f;
+
+	material->GetScalarParameterValue(param, scalarValue);
+
+	CheckScalarValue(scalarValue, DeltaTime);
+
+	
 }
 
 // Called to bind functionality to input
@@ -49,6 +85,8 @@ void AGenericCharacter::TakeDamage(int damageTaken)
 		life = 0;
 		isDead = true;
 	}
+
+	material->SetScalarParameterValue("OnHit", 1.0f);
 }
 
 void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -72,6 +110,8 @@ void AGenericCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		}
 		else
 			player->TakeDamage(damage);
+		
+			
 	}
 }
 
@@ -104,20 +144,4 @@ void AGenericCharacter::freezeMovemnent()
 {
 	GetCharacterMovement()->StopMovementImmediately();
 	GetCharacterMovement()->GravityScale = 0.0f;
-}
-
-void AGenericCharacter::AirAttack()
-{
-	isInAirCombat = true;
-	airCombatTimer = 0.0f;
-	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Flying;
-	GetCharacterMovement()->GravityScale = 0.f;
-}
-
-void AGenericCharacter::StopAirAttack()
-{
-	isInAirCombat = false;
-	airCombatTimer = timeInAirCombat;
-	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Falling;
-	GetCharacterMovement()->GravityScale = 1.f;
 }

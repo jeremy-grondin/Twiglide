@@ -22,9 +22,6 @@ class TWIGLIDE_API AEnemy : public AGenericCharacter
 	GENERATED_BODY()
 
 private:
-	class UMaterialInstanceDynamic* material;
-
-	FMaterialParameterInfo param;
 	
 public:
 	// Sets default values for this actor's properties

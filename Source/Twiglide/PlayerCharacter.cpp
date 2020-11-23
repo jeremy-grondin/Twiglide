@@ -40,6 +40,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// set the dash Mechanic values
 	canDash = true;
+	isDashing = false;
 	dashDistance = 6000.0f;
 	dashCooldown = 1.0f;
 	dashStop = 0.1f;
@@ -67,6 +68,14 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	timeInCombo = timeBetweenCombo;
+}
+
+void APlayerCharacter::CheckScalarValue(float value, float deltaTime)
+{
+	Super::CheckScalarValue(value, deltaTime);
+
+	if (value <= 0)
+		isHit = false;
 }
 
 void APlayerCharacter::DisableMouseInput()
@@ -111,13 +120,16 @@ void APlayerCharacter::Dash()
 			GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::StopDashing, dashStop, false);
 		}
 		canDash = false;
+		isDashing = true;
 	}
 }
 
 void APlayerCharacter::StopTargetDash()
 {
+	
 	GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
+	isDashing = false;
 	GetCharacterMovement()->BrakingFrictionFactor = 2.0f;
 }
 
@@ -125,6 +137,7 @@ void APlayerCharacter::StopDashing()
 {
 	//GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(unusedHandle, this, &APlayerCharacter::ResetDash, dashCooldown, false);
+	isDashing = false;
 	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
 }
 
@@ -137,16 +150,6 @@ void APlayerCharacter::ResetDash()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (isHit)
-	{
-		hitCooldown += DeltaTime;
-		if (hitCooldown >= hitDelay)
-		{
-			hitCooldown = 0.f;
-			isHit = false;
-		}
-	}
 
 	if (isChargingAttack)
 	{
@@ -329,11 +332,13 @@ void APlayerCharacter::TakeDamage(int damageTaken)
 			FOutputDeviceNull ar;
 			CallFunctionByNameWithArguments(TEXT("EventDeathPlayer"), ar, NULL, true);
 		}
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "GetHit");
 	}
 }
 
 void APlayerCharacter::Attack()
 {
+
 	if (canCombo)
 	{
 		GetWorldTimerManager().ClearTimer(timerHandler);
@@ -356,7 +361,6 @@ void APlayerCharacter::AttackRelease()
 		damage = heavyDamage * 2;
 	
 	isChargingAttack = false;
-	isAttackCharge = false;
 	chargeAttackTimer = 0.f;
 }
 
@@ -405,34 +409,30 @@ void APlayerCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		AEnemy* enemy = Cast<AEnemy>(OtherActor);
 
-		if (isAttackCharge && !enemy->isDead)
+		if (isAttackCharge && !enemy->isDead )
 		{
-			FVector launch = { 0.0, 0.0f, bumpForce };
+			FVector launch = { 0.0, 0.0f, 1000.0f };
 			enemy->LaunchCharacter(launch, true, true);
 			targetedEnemy = enemy;
-			targetLocked = true;
 		}
 
 		if (!enemy->isDead)
 		{
+			enemy->isHit = true;
+			enemy->TakeDamage(damage);
 			GetWorld()->GetTimerManager().SetTimer(timerHandler, enemy, &AGenericCharacter::freezeMovemnent, freezePosition, false);
 			GetWorld()->GetTimerManager().SetTimer(timerHandlerFreezeMovement, this, &AGenericCharacter::freezeMovemnent, freezePosition, false);
-			
-			AirAttack();
-			enemy->AirAttack();
-
-			GetWorld()->GetTimerManager().ClearTimer(enemy->airAttackTimerHandler);
-			GetWorld()->GetTimerManager().SetTimer(enemy->airAttackTimerHandler, enemy, &AGenericCharacter::StopAirAttack, timeInAirCombat, false);
-
-			GetWorld()->GetTimerManager().ClearTimer(airAttackTimerHandler);
-			GetWorld()->GetTimerManager().SetTimer(airAttackTimerHandler, this, &AGenericCharacter::StopAirAttack, timeInAirCombat, false);
-			
-			enemy->isHit = true;
+			enemy->isInAirCombat = true;
+			enemy->airCombatTimer = 0.0f;
+			isInAirCombat = true;
+			airCombatTimer = 0.0f;
 			enemy->TakeDamage(damage);
 		}
 
 		if (timeInCombo <= 0)
+		{
 			numberofHits = 1;
+		}
 		else
 			numberofHits++;
 

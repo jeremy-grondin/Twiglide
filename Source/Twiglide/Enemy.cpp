@@ -2,23 +2,21 @@
 
 
 #include "Enemy.h"
-#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 AEnemy::AEnemy()
 {
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	param.Name = "OnHit";
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	material = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
-	GetMesh()->SetMaterial(0, material);
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -36,35 +34,16 @@ void AEnemy::Tick(float DeltaTime)
 		}
 	}
 
-	float scalarValue = 0.0f;
-
-	material->GetScalarParameterValue(param, scalarValue);
-
-	if (scalarValue > 0.0f)
-	{
-		scalarValue -= DeltaTime;
-		material->SetScalarParameterValue("OnHit", scalarValue);
-	}
-
-	/*if (isInAirCombat)
-	{
-		airCombatTimer += DeltaTime;
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "In AirCombat");
-		if (airCombatTimer >= airCombatDuration)
-		{
-			GetCharacterMovement()->GravityScale = 1.0f;
-			airCombatTimer = 0.0f;
-			isInAirCombat = false;
-		}
-	}*/
 }
 
 void AEnemy::TakeDamage(int damageTaken)
 {
 	Super::TakeDamage(damageTaken);
-
-	material->SetScalarParameterValue("OnHit", 1.0f);
-
-	/*if (isDead)
-		SetActorEnableCollision(false);*/
+	
+	if (isDead)
+	{
+		attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	}
+		
 }

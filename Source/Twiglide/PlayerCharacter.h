@@ -34,9 +34,13 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 
 	void RinterpCamera();
 
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
+
+	void CheckScalarValue(float value, float deltaTime) override;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Save)
 	FVector checkPointLocation;
@@ -68,6 +72,9 @@ public:
 	/** Cooldown between dashes. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
 	float dashCooldown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DashMechanic)
+	bool isDashing;
 	 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	float hitDelay = 1.0f;
@@ -94,8 +101,8 @@ public:
 	float chargeAttackTimer = 0.0f;
 
 	FTimerHandle timerHandler;
-	
 	FTimerHandle timerHandlerFreezeMovement;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	int comboCounter = 0;
@@ -111,13 +118,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 	float timeInCombo;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
-	float bumpForce = 1000.f;
-	
-
-	//player is being hit by an attack
-	bool isHit = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Characteristic)
 	bool isChargingAttack = false;
