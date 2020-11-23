@@ -2,6 +2,8 @@
 
 
 #include "Enemy.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
 AEnemy::AEnemy()
@@ -38,6 +40,10 @@ void AEnemy::TakeDamage(int damageTaken)
 {
 	Super::TakeDamage(damageTaken);
 	
-	if(isDead)
-		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	if (isDead)
+	{
+		attackBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	}
+		
 }
