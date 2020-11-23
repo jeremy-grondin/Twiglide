@@ -108,6 +108,7 @@ void AGenericCharacter::freezeMovemnent()
 
 void AGenericCharacter::AirAttack()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "air attack");
 	isInAirCombat = true;
 	airCombatTimer = 0.0f;
 	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Flying;
@@ -116,6 +117,7 @@ void AGenericCharacter::AirAttack()
 
 void AGenericCharacter::StopAirAttack()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Stop air attack");
 	isInAirCombat = false;
 	airCombatTimer = timeInAirCombat;
 	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Falling;
