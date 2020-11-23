@@ -32,6 +32,7 @@ class TWIGLIDE_API APlayerCharacter : public AGenericCharacter
 
 	TArray<class AEnemy*> GetAliveEnemies();
 
+	/** Lerp the Camera to give smooth transition to the target */
 	void RinterpCamera();
 
 
@@ -84,9 +85,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool canCombo = false;
-
-	UFUNCTION(BlueprintCallable)
-	void DisableMouseInput();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AEnemy* targetedEnemy;
